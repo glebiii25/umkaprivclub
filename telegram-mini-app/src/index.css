@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* SF Pro font */
+@font-face {
+  font-family: "SF Pro";
+  src: url("https://cdn.jsdelivr.net/npm/sf-pro@1.0.4/font/woff2/sf-pro-text_regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SF Pro";
+  src: url("https://cdn.jsdelivr.net/npm/sf-pro@1.0.4/font/woff2/sf-pro-text_semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SF Pro";
+  src: url("https://cdn.jsdelivr.net/npm/sf-pro@1.0.4/font/woff2/sf-pro-display_regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SF Pro";
+  src: url("https://cdn.jsdelivr.net/npm/sf-pro@1.0.4/font/woff2/sf-pro-display_semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "SF Pro";
+  src: url("https://cdn.jsdelivr.net/npm/sf-pro@1.0.4/font/woff2/sf-pro-display_bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Telegram theme CSS variables will be bound by SDK (--tg-theme-*) */
+@layer base {
+  html,
+  body,
+  #root {
+    @apply min-h-full;
+  }
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply min-h-screen min-w-[320px] m-0;
+    font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--tg-theme-bg-color, #000);
+    color: var(--tg-theme-text-color, #fff);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+.safe-area-padding {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+}
