@@ -23,15 +23,17 @@ function loadSupabaseEnv(): Record<string, string> {
 }
 
 const supabaseEnv = loadSupabaseEnv()
-const hasSupabase = (v: string | undefined) => v != null && String(v).trim() !== ''
+const env = (key: string) => {
+  const v = supabaseEnv[key] || process.env[key]
+  return v ? v.trim() : undefined
+}
 
-// Supabase config only from telegram-mini-app/supabase.env (no process.env fallback)
 // https://vite.dev/config/
 export default defineConfig({
   define: {
-    ...(hasSupabase(supabaseEnv.VITE_SUPABASE_URL) && { 'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseEnv.VITE_SUPABASE_URL!.trim()) }),
-    ...(hasSupabase(supabaseEnv.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY) && { 'import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY': JSON.stringify(supabaseEnv.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY!.trim()) }),
-    ...(hasSupabase(supabaseEnv.VITE_SUPABASE_MEDIA_BUCKET) && { 'import.meta.env.VITE_SUPABASE_MEDIA_BUCKET': JSON.stringify(supabaseEnv.VITE_SUPABASE_MEDIA_BUCKET!.trim()) }),
+    ...(env('VITE_SUPABASE_URL') && { 'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env('VITE_SUPABASE_URL')) }),
+    ...(env('VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY') && { 'import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY': JSON.stringify(env('VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY')) }),
+    ...(env('VITE_SUPABASE_MEDIA_BUCKET') && { 'import.meta.env.VITE_SUPABASE_MEDIA_BUCKET': JSON.stringify(env('VITE_SUPABASE_MEDIA_BUCKET')) }),
   },
   plugins: [react()],
   resolve: {
