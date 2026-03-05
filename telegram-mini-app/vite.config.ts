@@ -41,7 +41,7 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
-  base: './', // Telegram Mini App: relative paths for flexible deployment
+  base: '/',
   server: {
     host: 'localhost',
     port: 5173,
