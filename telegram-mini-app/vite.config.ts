@@ -30,10 +30,15 @@ const hasSupabase = (v: string | undefined) => v != null && String(v).trim() !==
 export default defineConfig({
   define: {
     ...(hasSupabase(supabaseEnv.VITE_SUPABASE_URL) && { 'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseEnv.VITE_SUPABASE_URL!.trim()) }),
-    ...(hasSupabase(supabaseEnv.VITE_SUPABASE_ANON_KEY) && { 'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(supabaseEnv.VITE_SUPABASE_ANON_KEY!.trim()) }),
+    ...(hasSupabase(supabaseEnv.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY) && { 'import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY': JSON.stringify(supabaseEnv.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY!.trim()) }),
     ...(hasSupabase(supabaseEnv.VITE_SUPABASE_MEDIA_BUCKET) && { 'import.meta.env.VITE_SUPABASE_MEDIA_BUCKET': JSON.stringify(supabaseEnv.VITE_SUPABASE_MEDIA_BUCKET!.trim()) }),
   },
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+  },
   base: './', // Telegram Mini App: relative paths for flexible deployment
   server: {
     host: 'localhost',

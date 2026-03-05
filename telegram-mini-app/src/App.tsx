@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import {
   init,
   bindThemeParamsCssVars,
@@ -8,6 +8,7 @@ import {
   useSignal,
   initDataUser,
 } from '@telegram-apps/sdk-react';
+import { createClient } from '@/lib/client';
 import { checkAccess } from './utils/auth';
 import { NoAccess } from './pages/NoAccess';
 import { Home } from './pages/Home';
@@ -24,8 +25,59 @@ import MiniTest from './pages/MiniTest';
 import Schedule from './pages/Schedule';
 import Exercise from './pages/Exercise';
 import { Favorites } from './pages/Favorites';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 
 const LOADING_TIMEOUT_MS = 2500;
+
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const [authStatus, setAuthStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
+  const location = useLocation();
+
+  useEffect(() => {
+    try {
+      const supabase = createClient();
+
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setAuthStatus(session ? 'authenticated' : 'unauthenticated');
+      }).catch(() => {
+        setAuthStatus('unauthenticated');
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setAuthStatus(session ? 'authenticated' : 'unauthenticated');
+      });
+
+      return () => subscription.unsubscribe();
+    } catch {
+      setAuthStatus('unauthenticated');
+      return () => {};
+    }
+  }, []);
+
+  if (authStatus === 'loading') {
+    return (
+      <div
+        className="min-h-screen safe-area-padding flex items-center justify-center"
+        style={{ backgroundColor: 'rgb(0,0,0)', color: 'rgb(255,255,255)' }}
+      >
+        <p className="text-[17px] opacity-80">Загрузка...</p>
+      </div>
+    );
+  }
+
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/sign-up';
+
+  if (authStatus === 'unauthenticated' && !isAuthRoute) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (authStatus === 'authenticated' && isAuthRoute) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function AccessGate() {
   const tgUser = useSignal(initDataUser);
@@ -45,7 +97,6 @@ function AccessGate() {
     }
     timeoutRef.current = setTimeout(() => {
       timeoutRef.current = null;
-      // При открытом доступе пускаем и без tg user id (истёк таймаут ожидания)
       setStatus((s) => (s === 'loading' ? 'allowed' : s));
     }, LOADING_TIMEOUT_MS);
     return () => {
@@ -124,7 +175,13 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen safe-area-padding" style={{ backgroundColor: 'rgb(0,0,0)' }}>
-        <AccessGate />
+        <AuthGate>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/*" element={<AccessGate />} />
+          </Routes>
+        </AuthGate>
       </div>
     </BrowserRouter>
   );
